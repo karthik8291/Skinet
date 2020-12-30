@@ -39,7 +39,14 @@ namespace API
             services.AddDbContext<StoreContext>(x => 
             x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
             services.AddApplicationServices();  
-            services.AddSwaggerDocumentation();       
+            services.AddSwaggerDocumentation(); 
+            services.AddCors(opt => 
+            {
+                opt.AddPolicy("CorsPolicy", policy => 
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
+                });
+            });      
 
         }
 
@@ -53,9 +60,11 @@ namespace API
             app.UseRouting();
             // if you want to static images in postman pls use below staticfile code
             app.UseStaticFiles();
+            app.UseCors("CorsPolicy");
             app.UseAuthorization();
             //Swagger code is cleaned up and moved to API.Extension folder
             app.UseSwaggerDocumentation();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
